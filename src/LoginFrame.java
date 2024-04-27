@@ -36,13 +36,8 @@ public class LoginFrame extends JFrame {
     }
 
     private void loginAction(ActionEvent e) {
-//        String username = userTextField.getText();
-//        String password = new String(passwordField.getPassword());
-//
-//        // Add your authentication logic here
-//        System.out.println("Login attempted with username: " + username + " and password: " + password);
         String username = userTextField.getText();
-        String password = new String(passwordField.getPassword());
+        String password = SecurityUtil.hashPassword(new String(passwordField.getPassword()));
         try (Connection conn = DatabaseConnection.getConnection()) {
             String sql = "SELECT * FROM Users WHERE username = ? AND password = ?";
             PreparedStatement statement = conn.prepareStatement(sql);

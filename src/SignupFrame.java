@@ -30,7 +30,7 @@ public class SignupFrame extends JFrame {
 
     private void signupAction(ActionEvent e) {
         String username = userTextField.getText();
-        String password = new String(passwordField.getPassword());
+        String password = SecurityUtil.hashPassword(new String(passwordField.getPassword()));
         try (Connection conn = DatabaseConnection.getConnection()) {
             String sql = "INSERT INTO Users (username, password) VALUES (?, ?)";
             PreparedStatement statement = conn.prepareStatement(sql);
@@ -43,12 +43,7 @@ public class SignupFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Signup failed.");
             }
         } catch (SQLException ex) {
-            if (ex.getSQLState().startsWith("23")) { // Constraint violation
-                JOptionPane.showMessageDialog(this, "Username already exists.");
-            } else {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
-            }
+            JOptionPane.showMessageDialog(this, "Username already exists.");
         }
     }
 }
