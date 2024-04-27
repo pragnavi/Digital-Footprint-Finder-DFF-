@@ -1,29 +1,35 @@
+//package gui;
 //import javax.swing.*;
+//
+//import db.DatabaseConnection;
+//import util.SecurityUtil;
+//
 //import java.awt.*;
 //import java.awt.event.ActionEvent;
 //import java.sql.*;
 //
-//public class SignupFrame extends JFrame {
+//public class LoginFrame extends JFrame {
 //    private JTextField userTextField;
 //    private JPasswordField passwordField;
+//    private JButton loginButton;
 //    private JButton signupButton;
-//    private JButton backButton;
 //
-//    public SignupFrame() {
+//    public LoginFrame() {
 //        initUI();
 //    }
 //
 //    private void initUI() {
-//        setTitle("Sign Up");
-//        setSize(320, 220);
-//        setLocationRelativeTo(null);
-//        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//        setTitle("Login");
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        setExtendedState(JFrame.MAXIMIZED_BOTH);  // Set frame to maximum size
+//        setUndecorated(true);  // Optionally remove frame decorations
 //        getContentPane().setBackground(new Color(255, 250, 250));  // Soft white background
 //
 //        setLayout(new GridBagLayout());
 //        GridBagConstraints constraints = new GridBagConstraints();
 //        constraints.fill = GridBagConstraints.HORIZONTAL;
 //        constraints.insets = new Insets(10, 10, 10, 10);
+//        constraints.gridx = 0;
 //
 //        Font font = new Font("Arial", Font.PLAIN, 14);
 //
@@ -31,12 +37,11 @@
 //        userTextField.setFont(font);
 //        passwordField = new JPasswordField(20);
 //        passwordField.setFont(font);
-//        signupButton = new JButton("Sign Up");
+//        loginButton = new JButton("Login");
+//        styleButton(loginButton);
+//        signupButton = new JButton("Register Now");
 //        styleButton(signupButton);
-//        backButton = new JButton("Back to Login");
-//        styleButton(backButton);
 //
-//        constraints.gridx = 0;
 //        constraints.gridy = 0;
 //        add(new JLabel("Username:"), constraints);
 //        constraints.gridy++;
@@ -46,16 +51,15 @@
 //        constraints.gridy++;
 //        add(passwordField, constraints);
 //        constraints.gridy++;
-//        constraints.gridwidth = 1;
+//        add(loginButton, constraints);
+//        constraints.gridy++;
 //        add(signupButton, constraints);
-//        constraints.gridx++;
-//        add(backButton, constraints);
 //
-//        signupButton.addActionListener(this::signupAction);
-//        backButton.addActionListener(e -> {
-//            LoginFrame loginFrame = new LoginFrame();
-//            loginFrame.setVisible(true);
-//            dispose();  // Close the signup window
+//        loginButton.addActionListener(this::loginAction);
+//        signupButton.addActionListener(e -> {
+//            SignupFrame signupFrame = new SignupFrame();
+//            signupFrame.setVisible(true);
+//            dispose();  // Close the login window
 //        });
 //    }
 //
@@ -65,7 +69,7 @@
 //        button.setForeground(Color.DARK_GRAY);
 //    }
 //
-//    private void signupAction(ActionEvent e) {
+//    private void loginAction(ActionEvent e) {
 //        String username = userTextField.getText();
 //        String password = new String(passwordField.getPassword());
 //
@@ -76,44 +80,53 @@
 //
 //        String hashedPassword = SecurityUtil.hashPassword(password);
 //        try (Connection conn = DatabaseConnection.getConnection()) {
-//            String sql = "INSERT INTO Users (username, password) VALUES (?, ?)";
+//            String sql = "SELECT * FROM Users WHERE username = ? AND password = ?";
 //            PreparedStatement statement = conn.prepareStatement(sql);
 //            statement.setString(1, username);
 //            statement.setString(2, hashedPassword);
-//            statement.executeUpdate();
-//            JOptionPane.showMessageDialog(this, "Signup successful!");
+//            ResultSet resultSet = statement.executeQuery();
+//            if (resultSet.next()) {
+//                JOptionPane.showMessageDialog(this, "Login Successful!");
+//            } else {
+//                JOptionPane.showMessageDialog(this, "Invalid credentials.", "Login Error", JOptionPane.ERROR_MESSAGE);
+//            }
 //        } catch (SQLException ex) {
-//            JOptionPane.showMessageDialog(this, "Username already exists.", "Signup Error", JOptionPane.ERROR_MESSAGE);
+//            ex.printStackTrace();
 //        }
 //    }
 //}
+package gui;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import db.DatabaseConnection;
+import util.SecurityUtil;
+import util.UIEffects;
 import java.sql.*;
 
-public class SignupFrame extends JFrame {
+public class LoginFrame extends JFrame {
     private JTextField userTextField;
     private JPasswordField passwordField;
+    private JButton loginButton;
     private JButton signupButton;
-    private JButton backButton;
 
-    public SignupFrame() {
+    public LoginFrame() {
         initUI();
     }
 
     private void initUI() {
-        setTitle("Sign Up");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // Set frame to maximum size
-        setUndecorated(true); // Optionally remove frame decorations
-        getContentPane().setBackground(new Color(255, 250, 250)); // Soft white background
+        setTitle("Login");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setUndecorated(true);
+        getContentPane().setBackground(UIEffects.BACKGROUND_COLOR);
 
         setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.insets = new Insets(10, 10, 10, 10);
+        constraints.gridx = 0;
 
         Font font = new Font("Arial", Font.PLAIN, 14);
 
@@ -121,12 +134,13 @@ public class SignupFrame extends JFrame {
         userTextField.setFont(font);
         passwordField = new JPasswordField(20);
         passwordField.setFont(font);
+        loginButton = new JButton("Login");
         signupButton = new JButton("Sign Up");
-        styleButton(signupButton);
-        backButton = new JButton("Back to Login");
-        styleButton(backButton);
 
-        constraints.gridx = 0;
+        UIEffects.styleButton(loginButton);
+        UIEffects.styleButton(signupButton);
+        UIEffects.applyButtonAnimation(loginButton);
+
         constraints.gridy = 0;
         add(new JLabel("Username:"), constraints);
         constraints.gridy++;
@@ -136,26 +150,19 @@ public class SignupFrame extends JFrame {
         constraints.gridy++;
         add(passwordField, constraints);
         constraints.gridy++;
-        constraints.gridwidth = 1;
+        add(loginButton, constraints);
+        constraints.gridy++;
         add(signupButton, constraints);
-        constraints.gridx++;
-        add(backButton, constraints);
 
-        signupButton.addActionListener(this::signupAction);
-        backButton.addActionListener(e -> {
-            LoginFrame loginFrame = new LoginFrame();
-            loginFrame.setVisible(true);
-            dispose(); // Close the signup window
+        loginButton.addActionListener(this::loginAction);
+        signupButton.addActionListener(e -> {
+            SignupFrame signupFrame = new SignupFrame();
+            signupFrame.setVisible(true);
+            dispose();
         });
     }
 
-    private void styleButton(JButton button) {
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setBackground(new Color(230, 230, 250)); // Lavender background
-        button.setForeground(Color.DARK_GRAY);
-    }
-
-    private void signupAction(ActionEvent e) {
+    private void loginAction(ActionEvent e) {
         String username = userTextField.getText();
         String password = new String(passwordField.getPassword());
 
@@ -166,14 +173,18 @@ public class SignupFrame extends JFrame {
 
         String hashedPassword = SecurityUtil.hashPassword(password);
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "INSERT INTO Users (username, password) VALUES (?, ?)";
+            String sql = "SELECT * FROM Users WHERE username = ? AND password = ?";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, username);
             statement.setString(2, hashedPassword);
-            statement.executeUpdate();
-            JOptionPane.showMessageDialog(this, "Signup successful!");
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                JOptionPane.showMessageDialog(this, "Login Successful!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid credentials.", "Login Error", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Username already exists.", "Signup Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
         }
     }
 }
