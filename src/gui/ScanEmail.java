@@ -13,7 +13,7 @@ import javax.swing.SwingUtilities;
 
 public class ScanEmail {
 
-    public static void executeTool(String userEmail) {
+    public static void executeTool(String userEmail, boolean subscribed) {
         try {
         	String currentDirectory = System.getProperty("user.dir");
 
@@ -32,7 +32,7 @@ public class ScanEmail {
 
                 if (userData != null) {
                     SwingUtilities.invokeLater(() -> {
-                        ScanDetailsFrame userDetailsUI = new ScanDetailsFrame(userData);
+                        ScanDetailsFrame userDetailsUI = new ScanDetailsFrame(userData, subscribed);
                         userDetailsUI.setVisible(true);
                     });
                 } else {

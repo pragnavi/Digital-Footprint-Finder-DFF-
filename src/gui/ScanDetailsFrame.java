@@ -2,9 +2,14 @@ package gui;
 
 import javax.swing.*;
 
+import db.DatabaseConnection;
 import util.UIEffects;
 
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 
 public class ScanDetailsFrame extends JFrame {
@@ -14,12 +19,14 @@ public class ScanDetailsFrame extends JFrame {
     private JTextArea googleSearchTextArea;
     private JTextArea socialMediaTextArea;
     private JButton logoutButton;
+    
+    private JToggleButton subscribeToggleButton;
 
-    public ScanDetailsFrame(Map<String, Object> userData) {
-        initUI(userData);
+    public ScanDetailsFrame(Map<String, Object> userData, boolean isSubscribed) {
+        initUI(userData, isSubscribed);
     }
 
-    private void initUI(Map<String, Object> userData) {
+    private void initUI(Map<String, Object> userData, boolean isSubscribed) {
     	setTitle("Digital Footprint Finder");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -86,9 +93,55 @@ public class ScanDetailsFrame extends JFrame {
             socialMediaTextArea.append("Twitter: " + userData.get("twitter_exists") + "\n");
         }
         
-        constraints.gridy = 0;
-        add(new JLabel("Scan Results"), constraints);
+        subscribeToggleButton = new JToggleButton(isSubscribed ? "Subscribed" : "Subscribe");
+        subscribeToggleButton.addActionListener(e -> {
+        	Connection conn = null;
+        	try {
+        		conn = DatabaseConnection.getConnection();
+        		if (subscribeToggleButton.isSelected()) {
+                    String sql = "UPDATE Users SET subscribed = ? WHERE email = ?";
+                    PreparedStatement statement = conn.prepareStatement(sql);
+                    statement.setBoolean(1, true);
+                    statement.setString(2, (String) userData.get("email"));
+                    int rowsUpdated = statement.executeUpdate();
+                    if (rowsUpdated > 0) {
+                        JOptionPane.showMessageDialog(this, "Subscribed!");
+                        subscribeToggleButton.setText("Unsubscribe");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Subscription failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+            	}
+        		else {
+        			String sql = "UPDATE Users SET subscribed = ? WHERE email = ?";
+                    PreparedStatement statement = conn.prepareStatement(sql);
+                    statement.setBoolean(1, false);
+                    statement.setString(2, (String) userData.get("email"));
+                    int rowsUpdated = statement.executeUpdate();
+                    if (rowsUpdated > 0) {
+                        JOptionPane.showMessageDialog(this, "Unsubscribed!");
+                        subscribeToggleButton.setText("Subscribe");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Unsubscription failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+        	} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} finally {
+                if (conn != null) {
+                    DatabaseConnection.releaseConnection(conn);
+                }
+            }
+        });
         
+        constraints.gridy = 0;
+        add(new JLabel("Subscribe for bi-weekly scans"), constraints);        
+        
+        constraints.gridy++;
+        add(subscribeToggleButton, constraints);
+        
+        constraints.gridy++;
+        add(new JLabel("Scan Results"), constraints);
         
         constraints.gridy++;
         add(emailTextArea, constraints);

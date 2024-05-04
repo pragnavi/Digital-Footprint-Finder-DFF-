@@ -92,8 +92,9 @@ public class LoginFrame extends JFrame {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 JOptionPane.showMessageDialog(this, "Login Successful!");
+                boolean isSubscribed = resultSet.getBoolean("subscribed");
                 String userEmail = userTextField.getText();
-                ScanEmail.executeTool(userEmail);
+                ScanEmail.executeTool(userEmail, isSubscribed);
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid credentials.", "Login Error", JOptionPane.ERROR_MESSAGE);
             }
