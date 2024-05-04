@@ -92,11 +92,8 @@ public class LoginFrame extends JFrame {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 JOptionPane.showMessageDialog(this, "Login Successful!");
-//                SwingUtilities.invokeLater(() -> new ScanEmailFrame());
-//                SwingUtilities.invokeLater(() -> {
-//                	ScanEmailFrame scanEmailFrame = new ScanEmailFrame();
-//                	scanEmailFrame.setVisible(true);
-//                });
+                String userEmail = userTextField.getText();
+                ScanEmail.executeTool(userEmail);
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid credentials.", "Login Error", JOptionPane.ERROR_MESSAGE);
             }

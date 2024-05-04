@@ -84,11 +84,6 @@ public class SignupFrame extends JFrame {
             statement.setString(2, hashedPassword);
             statement.executeUpdate();
             JOptionPane.showMessageDialog(this, "Signup successful!");
-            SwingUtilities.invokeLater(() -> new ScanFrame());
-            SwingUtilities.invokeLater(() -> {
-            	ScanFrame scanFrame = new ScanFrame();
-            	scanFrame.setVisible(true);
-            });
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Email already exists or database error: " + ex.getMessage(), "Signup Error", JOptionPane.ERROR_MESSAGE);
         } finally {
