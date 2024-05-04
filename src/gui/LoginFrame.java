@@ -45,7 +45,7 @@ public class LoginFrame extends JFrame {
         UIEffects.applyButtonAnimation(loginButton);
 
         constraints.gridy = 0;
-        add(new JLabel("Username:"), constraints);
+        add(new JLabel("Email:"), constraints);
         constraints.gridy++;
         add(userTextField, constraints);
         constraints.gridy++;
@@ -57,7 +57,14 @@ public class LoginFrame extends JFrame {
         constraints.gridy++;
         add(signupButton, constraints);
 
-        loginButton.addActionListener(this::loginAction);
+        loginButton.addActionListener(e -> {
+			try {
+				loginAction(e);
+			} catch (SQLException ex) {
+				// TODO Auto-generated catch block
+				ex.printStackTrace();
+			}
+		});
         signupButton.addActionListener(e -> {
             SignupFrame signupFrame = new SignupFrame();
             signupFrame.setVisible(true);
@@ -65,12 +72,12 @@ public class LoginFrame extends JFrame {
         });
     }
 
-    private void loginAction(ActionEvent e) {
-        String username = userTextField.getText();
+    private void loginAction(ActionEvent e) throws SQLException {
+        String email = userTextField.getText();
         String password = new String(passwordField.getPassword());
 
-        if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Username or password cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+        if (email.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Email or password cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -78,18 +85,21 @@ public class LoginFrame extends JFrame {
         Connection conn = null;
         try {
             conn = DatabaseConnection.getConnection();
-            String sql = "SELECT * FROM Users WHERE username = ? AND password = ?";
+            String sql = "SELECT * FROM Users WHERE email = ? AND password = ?";
             PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, username);
+            statement.setString(1, email);
             statement.setString(2, hashedPassword);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 JOptionPane.showMessageDialog(this, "Login Successful!");
+//                SwingUtilities.invokeLater(() -> new ScanEmailFrame());
+//                SwingUtilities.invokeLater(() -> {
+//                	ScanEmailFrame scanEmailFrame = new ScanEmailFrame();
+//                	scanEmailFrame.setVisible(true);
+//                });
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid credentials.", "Login Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         } finally {
             if (conn != null) {
                 DatabaseConnection.releaseConnection(conn);

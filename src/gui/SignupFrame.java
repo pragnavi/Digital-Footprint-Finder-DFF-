@@ -45,7 +45,7 @@ public class SignupFrame extends JFrame {
         UIEffects.applyButtonAnimation(signupButton);
 
         constraints.gridy = 0;
-        add(new JLabel("Username:"), constraints);
+        add(new JLabel("Email:"), constraints);
         constraints.gridy++;
         add(userTextField, constraints);
         constraints.gridy++;
@@ -66,11 +66,11 @@ public class SignupFrame extends JFrame {
     }
 
     private void signupAction(ActionEvent e) {
-        String username = userTextField.getText();
+        String email = userTextField.getText();
         String password = new String(passwordField.getPassword());
 
-        if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Username or password cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+        if (email.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Email or password cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -78,14 +78,19 @@ public class SignupFrame extends JFrame {
         Connection conn = null;
         try {
             conn = DatabaseConnection.getConnection();
-            String sql = "INSERT INTO Users (username, password) VALUES (?, ?)";
+            String sql = "INSERT INTO Users (email, password) VALUES (?, ?)";
             PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, username);
+            statement.setString(1, email);
             statement.setString(2, hashedPassword);
             statement.executeUpdate();
             JOptionPane.showMessageDialog(this, "Signup successful!");
+            SwingUtilities.invokeLater(() -> new ScanFrame());
+            SwingUtilities.invokeLater(() -> {
+            	ScanFrame scanFrame = new ScanFrame();
+            	scanFrame.setVisible(true);
+            });
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Username already exists or database error: " + ex.getMessage(), "Signup Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Email already exists or database error: " + ex.getMessage(), "Signup Error", JOptionPane.ERROR_MESSAGE);
         } finally {
             if (conn != null) {
                 DatabaseConnection.releaseConnection(conn);
