@@ -31,7 +31,7 @@ public class ScanDetailsFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setUndecorated(true);
-        getContentPane().setBackground(UIEffects.BACKGROUND_COLOR);
+//        getContentPane().setBackground(UIEffects.BACKGROUND_COLOR);
         
         setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();

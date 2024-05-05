@@ -6,10 +6,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/Users/pragnavi/Downloads/mysql-connector-j-8.3.0/mysql-connector-j-8.3.0.jar">
+	<classpathentry exported="true" kind="lib" path="/Users/pragnavi/Downloads/mysql-connector-j-8.3.0/mysql-connector-j-8.3.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/Users/pragnavi/Downloads/gson-2.10.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
