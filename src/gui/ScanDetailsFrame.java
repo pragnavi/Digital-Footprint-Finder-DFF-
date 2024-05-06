@@ -19,18 +19,21 @@ public class ScanDetailsFrame extends JFrame {
     private JTextArea googleSearchTextArea;
     private JTextArea socialMediaTextArea;
     private JButton logoutButton;
+    private boolean isSubscribed;
     
     private JToggleButton subscribeToggleButton;
 
-    public ScanDetailsFrame(Map<String, Object> userData, boolean isSubscribed) {
-        initUI(userData, isSubscribed);
+    public ScanDetailsFrame(Map<String, Object> userData, boolean isSubscribedParm) {
+        initUI(userData, isSubscribedParm);
     }
 
-    private void initUI(Map<String, Object> userData, boolean isSubscribed) {
+    private void initUI(Map<String, Object> userData, boolean isSubscribedParm) {
     	setTitle("Digital Footprint Finder");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+//        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setUndecorated(true);
+        setPreferredSize(new Dimension(1000, 800)); 
+        isSubscribed = isSubscribedParm;
 //        getContentPane().setBackground(UIEffects.BACKGROUND_COLOR);
         
         setLayout(new GridBagLayout());
@@ -93,31 +96,33 @@ public class ScanDetailsFrame extends JFrame {
             socialMediaTextArea.append("Twitter: " + userData.get("twitter_exists") + "\n");
         }
         
-        subscribeToggleButton = new JToggleButton(isSubscribed ? "Subscribed" : "Subscribe");
+        subscribeToggleButton = new JToggleButton(isSubscribed ? "Unsubscribe" : "Subscribe");
         subscribeToggleButton.addActionListener(e -> {
         	Connection conn = null;
         	try {
         		conn = DatabaseConnection.getConnection();
-        		if (subscribeToggleButton.isSelected()) {
+        		if (!isSubscribed && subscribeToggleButton.isSelected()) {
                     String sql = "UPDATE Users SET subscribed = ? WHERE email = ?";
                     PreparedStatement statement = conn.prepareStatement(sql);
                     statement.setBoolean(1, true);
                     statement.setString(2, (String) userData.get("email"));
                     int rowsUpdated = statement.executeUpdate();
                     if (rowsUpdated > 0) {
+                    	isSubscribed = !isSubscribed;
                         JOptionPane.showMessageDialog(this, "Subscribed!");
                         subscribeToggleButton.setText("Unsubscribe");
                     } else {
                         JOptionPane.showMessageDialog(this, "Subscription failed.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
             	}
-        		else {
+        		else if (isSubscribed && subscribeToggleButton.isSelected()) {
         			String sql = "UPDATE Users SET subscribed = ? WHERE email = ?";
                     PreparedStatement statement = conn.prepareStatement(sql);
                     statement.setBoolean(1, false);
                     statement.setString(2, (String) userData.get("email"));
                     int rowsUpdated = statement.executeUpdate();
                     if (rowsUpdated > 0) {
+                    	isSubscribed = !isSubscribed;
                         JOptionPane.showMessageDialog(this, "Unsubscribed!");
                         subscribeToggleButton.setText("Subscribe");
                     } else {

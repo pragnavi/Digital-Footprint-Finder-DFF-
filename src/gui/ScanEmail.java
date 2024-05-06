@@ -16,19 +16,22 @@ public class ScanEmail {
     public static void executeTool(String userEmail, boolean subscribed) {
         try {
         	String currentDirectory = System.getProperty("user.dir");
+        	System.out.println("currentDirectory: " + currentDirectory);
+        	String filename = "output.json";
 
             Process process = Runtime.getRuntime().exec(new String[]{
                     "./src/gui/mosint",
                     userEmail,
                     "-s",
-                    "-o", "output.json",
+                    "-o", filename,
                     "-c", "./src/gui/config.yaml"
             });
+            
 
             int exitCode = process.waitFor();
 
             if (exitCode == 0) {
-                Map<String, Object> userData = readOutputJson();
+                Map<String, Object> userData = readOutputJson(filename);
 
                 if (userData != null) {
                     SwingUtilities.invokeLater(() -> {
@@ -47,9 +50,35 @@ public class ScanEmail {
         }
     }
     
-    private static Map<String, Object> readOutputJson() {
+    public static void executeScan(String userEmail) {
+    	try {
+    		String currentDirectory = System.getProperty("user.dir");
+        	System.out.println("currentDirectory: " + currentDirectory);
+    		String filename = "./scans/output".concat(userEmail.split("@")[0]).concat(".json");
+            Process process = Runtime.getRuntime().exec(new String[]{
+                    "./src/gui/mosint",
+                    userEmail,
+                    "-s",
+                    "-o", filename,
+                    "-c", "./src/gui/config.yaml"
+            });
+
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                System.out.println("Scan complete for user: " + userEmail);
+            } else {
+                System.out.println("Tool execution failed");
+            }
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private static Map<String, Object> readOutputJson(String filename) {
         Map<String, Object> userData = null;
-        try (BufferedReader reader = new BufferedReader(new FileReader("output.json"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             Gson gson = new Gson();
             userData = gson.fromJson(reader, new TypeToken<Map<String, Object>>(){}.getType());
         } catch (IOException e) {
