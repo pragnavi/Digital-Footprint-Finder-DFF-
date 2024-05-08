@@ -152,19 +152,19 @@ public class ScanDetailsFrame extends JFrame {
         add(emailTextArea, constraints);
         
         constraints.gridy++;
-        add(new JLabel("ipDetails:"), constraints);
+        add(new JLabel("Geographics:"), constraints);
         
         constraints.gridy++;
         add(ipDetailsTextArea, constraints);
         
         constraints.gridy++;
-        add(new JLabel("googleSearch:"), constraints);
+        add(new JLabel("Sensitive info on internet:"), constraints);
         
         constraints.gridy++;
         add(googleSearchTextArea, constraints);
         
         constraints.gridy++;
-        add(new JLabel("Social Media Presence:"), constraints);
+        add(new JLabel("Social Media Presence with this email:"), constraints);
         
         constraints.gridy++;
         add(socialMediaTextArea, constraints);

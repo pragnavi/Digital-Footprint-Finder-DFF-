@@ -74,20 +74,17 @@ public class AlertsFrame extends JFrame {
                     emailList.add(email);
                 }
                 
-                // Calculate the number of emails each thread will process
-                int numThreads = 2; // Change this to the desired number of threads
+                int numThreads = 2;
                 int emailsPerThread = emailList.size() / numThreads;
 
-                // Create and start multiple threads to send emails
                 List<Thread> threads = new ArrayList<>();
                 for (int i = 0; i < numThreads; i++) {
+                	System.out.println("Thread number: "+ i);
                     int startIdx = i * emailsPerThread;
                     int endIdx = (i == numThreads - 1) ? emailList.size() : (i + 1) * emailsPerThread;
 
-                    // Create a sublist of emailList for the current thread
                     List<String> sublist = emailList.subList(startIdx, endIdx);
 
-                    // Create a Runnable task for sending emails in the sublist
                     Runnable sendEmailTask = () -> {
                         for (String email : sublist) {
                         	ScanEmail.executeScan(email);
@@ -100,13 +97,11 @@ public class AlertsFrame extends JFrame {
                         }
                     };
 
-                    // Create and start a new thread for sending emails in the sublist
                     Thread thread = new Thread(sendEmailTask);
                     thread.start();
                     threads.add(thread);
                 }
 
-                // Wait for all threads to finish
                 for (Thread thread : threads) {
                     thread.join();
                 }
