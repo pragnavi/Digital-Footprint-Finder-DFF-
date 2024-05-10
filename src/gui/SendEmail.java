@@ -11,7 +11,7 @@ public class SendEmail {
         String host = "smtp.gmail.com";
         int port = 587;
         String username = "ag9489@nyu.edu";
-        String password = "fmlc ttsu sqfv edqx";
+        String password = "<Gmail SMTP Password>";
         
         
         String subject = "Test Email";

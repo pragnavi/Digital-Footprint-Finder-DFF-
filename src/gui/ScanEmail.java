@@ -17,7 +17,7 @@ public class ScanEmail {
         try {
         	String currentDirectory = System.getProperty("user.dir");
         	System.out.println("currentDirectory: " + currentDirectory);
-        	String filename = "output.json";
+        	String filename = "./scans/output".concat(userEmail.split("@")[0]).concat(".json");
 
             Process process = Runtime.getRuntime().exec(new String[]{
                     "./src/gui/mosint",
@@ -39,7 +39,7 @@ public class ScanEmail {
                         userDetailsUI.setVisible(true);
                     });
                 } else {
-                    System.out.println("Failed to read output.json");
+                    System.out.println("Failed to read " + filename);
                 }
             } else {
                 System.out.println("Tool execution failed");

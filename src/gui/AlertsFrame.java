@@ -74,7 +74,7 @@ public class AlertsFrame extends JFrame {
                     emailList.add(email);
                 }
                 
-                int numThreads = 2;
+                int numThreads = 10;
                 int emailsPerThread = emailList.size() / numThreads;
 
                 List<Thread> threads = new ArrayList<>();
